@@ -26,7 +26,15 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 }
 
 const registerUser = asyncHandler( async (req, res)=>{
-   
+    // get user details from frontend
+    // validation - not empty
+    // check if user already exists: username, email
+    // check for images, check for avatar
+    // upload them to cloudinary, avatar
+    // create user object - create entry in db
+    // remove password and refresh token field from response
+    // check for user creation
+    // return res
 
     const {fullName, email, username,password} = req.body
     console.log("email",email);
@@ -141,8 +149,8 @@ const logoutUser = asyncHandler( async (req,res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set:{
-                refreshToken: undefined
+            $unset:{
+                refreshToken: 1
             }
         },
         {
@@ -265,7 +273,7 @@ const updateAccountDetail = asyncHandler(async(req,res)=>{
 })
 
 
-const updateUserAvatar = new asyncHandler(async(req,res)=>{
+const updateUserAvatar = asyncHandler(async(req,res)=>{
     
    const avatarLocalPath = req.file?.path
 
@@ -297,7 +305,7 @@ const updateUserAvatar = new asyncHandler(async(req,res)=>{
 })
 
 
-const updateUserCoverImage = new asyncHandler(async(req,res)=>{
+const updateUserCoverImage = asyncHandler(async(req,res)=>{
     
    const coverImageLocalPath = req.file?.path
 
@@ -328,7 +336,7 @@ const updateUserCoverImage = new asyncHandler(async(req,res)=>{
 
 })
 
-const getUserChannelProfile = new asyncHandler(async(req,res)=>{
+const getUserChannelProfile = asyncHandler(async(req,res)=>{
     const {username} = req.params
 
     if(!username?.trim()){
@@ -363,7 +371,7 @@ const getUserChannelProfile = new asyncHandler(async(req,res)=>{
                     $size: "$subscribers"
                 },
                 channelSubscribedToCount: {
-                   $size: "subscribedTo"
+                   $size: "$subscribedTo"
                 },
                 isSubscribed: {
                     $cond: {
@@ -399,7 +407,7 @@ const getUserChannelProfile = new asyncHandler(async(req,res)=>{
 
 })
 
-const getWatchHistory = new asyncHandler(async(req,res)=>{
+const getWatchHistory = asyncHandler(async(req,res)=>{
     const user = await User.aggregate([
         {
             $match:{
